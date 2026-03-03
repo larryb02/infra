@@ -1,0 +1,69 @@
+name: Manage k3s cluster
+
+on:
+  push:
+    branches:
+      - development
+      - main
+    paths:
+      - "terraform/aws/cluster/**"
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-west-1
+  CLUSTER_DIR: terraform/aws/cluster
+
+jobs:
+  # plan:
+  #   if: github.ref == 'refs/heads/development'
+  #   runs-on: ubuntu-latest
+  #   permissions:
+  #     id-token: write
+  #     contents: read
+  #   steps:
+  #     - uses: actions/checkout@v4
+  #     - uses: aws-actions/configure-aws-credentials@v6
+  #       with:
+  #         role-to-assume: ${{ secrets.AWS_GITHUB_RUNNER_ROLE }}
+  #         aws-region: ${{ env.AWS_REGION }}
+  #     - uses: hashicorp/setup-terraform@v3
+  #     - run: echo "${{ secrets.CLUSTER_PUBLIC_KEY }}" > /tmp/cluster.pub
+  #     - run: |
+  #         terraform -chdir=$CLUSTER_DIR init
+  #         terraform -chdir=$CLUSTER_DIR validate
+  #         terraform -chdir=$CLUSTER_DIR plan -var="public_key_path=/tmp/cluster.pub"
+
+  apply:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_GITHUB_RUNNER_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+      - uses: hashicorp/setup-terraform@v3
+      - run: echo "${{ secrets.CLUSTER_PUBLIC_KEY }}" > /tmp/cluster.pub
+      - run: |
+          terraform -chdir=$CLUSTER_DIR init
+          terraform -chdir=$CLUSTER_DIR validate
+          terraform -chdir=$CLUSTER_DIR apply -auto-approve -var="public_key_path=/tmp/cluster.pub"
+
+  bootstrap_cluster:
+    runs-on: ubuntu-latest
+    needs: [apply]
+    permissions:
+      id-token: write
+    steps:
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_GITHUB_RUNNER_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+      - name: Bootstrap k3s cluster via bastion
+        run: |
+          aws ssm start-session --target ${{ secrets.BASTION_INSTANCE_ID }} \
+          --document-name AWS-StartNonInteractiveCommand \
+          --parameters '{"command": ["echo hello world"]}'

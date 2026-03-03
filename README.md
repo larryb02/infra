@@ -1,2 +1,2 @@
 # infra
-IaC
+Infrastructure as Code
