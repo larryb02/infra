@@ -10,7 +10,6 @@ terraform {
     bucket         = "lkb-main-s3-bucket"
     key            = "cluster/terraform.tfstate"
     region         = "us-west-1"
-    dynamodb_table = "terraform-state-lock"
     encrypt        = true
   }
 }
