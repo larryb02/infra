@@ -12,6 +12,6 @@ keyed_groups:
     prefix: k3s
     separator: _
 hostnames:
-  - private-ip-address
+  - tag:Name
 compose:
-  ansible_host: private_ip_address
+  ansible_host: instance_id

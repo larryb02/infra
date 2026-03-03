@@ -23,16 +23,16 @@ data "aws_ami" "amzlinux" {
   }
 }
 
-resource "aws_key_pair" "cluster" {
-  key_name   = "k3s-cluster-key"
-  public_key = file(var.public_key_path)
-}
+# resource "aws_key_pair" "cluster" {
+#   key_name   = "k3s-cluster-key"
+#   public_key = file(var.public_key_path)
+# }
 
 resource "aws_instance" "server" {
   ami                    = data.aws_ami.amzlinux.id
   instance_type          = var.server_instance_type
   vpc_security_group_ids = [aws_security_group.k3s-server.id]
-  key_name               = aws_key_pair.cluster.key_name
+  # key_name               = aws_key_pair.cluster.key_name
 
   tags = {
     Name = "k3s-server"
@@ -45,7 +45,7 @@ resource "aws_instance" "agent" {
   ami                    = data.aws_ami.amzlinux.id
   instance_type          = var.agent_instance_type
   vpc_security_group_ids = [aws_security_group.k3s-agent.id]
-  key_name               = aws_key_pair.cluster.key_name
+  # key_name               = aws_key_pair.cluster.key_name
 
   tags = {
     Name = "k3s-agent-${count.index}"

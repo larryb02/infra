@@ -46,11 +46,10 @@ jobs:
           role-to-assume: ${{ secrets.AWS_GITHUB_RUNNER_ROLE }}
           aws-region: ${{ env.AWS_REGION }}
       - uses: hashicorp/setup-terraform@v3
-      - run: echo "${{ secrets.CLUSTER_PUBLIC_KEY }}" > /tmp/cluster.pub
       - run: |
           terraform -chdir=$CLUSTER_DIR init
           terraform -chdir=$CLUSTER_DIR validate
-          terraform -chdir=$CLUSTER_DIR apply -auto-approve -var="public_key_path=/tmp/cluster.pub" -var="agent_count=0"
+          terraform -chdir=$CLUSTER_DIR apply -auto-approve -var="agent_count=0"
 
   bootstrap_cluster:
     runs-on: ubuntu-latest
