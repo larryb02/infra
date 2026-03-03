@@ -50,7 +50,7 @@ jobs:
       - run: |
           terraform -chdir=$CLUSTER_DIR init
           terraform -chdir=$CLUSTER_DIR validate
-          terraform -chdir=$CLUSTER_DIR apply -auto-approve -var="public_key_path=/tmp/cluster.pub"
+          terraform -chdir=$CLUSTER_DIR apply -auto-approve -var="public_key_path=/tmp/cluster.pub" -var="agent_count=0"
 
   bootstrap_cluster:
     runs-on: ubuntu-latest
