@@ -67,3 +67,4 @@ jobs:
           aws ssm start-session --target ${{ secrets.BASTION_INSTANCE_ID }} \
           --document-name AWS-StartNonInteractiveCommand \
           --parameters '{"command": ["echo hello world"]}'
+          exit $?
