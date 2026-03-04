@@ -44,3 +44,9 @@
       - k3s_service.status.ActiveState == "active"
       - k3s_service.status.UnitFileState == "enabled"
     fail_msg: "k3s service is not running or not enabled for restart on boot"
+
+- name: Fetch kubeconfig
+  ansible.builtin.fetch:
+    src: /etc/rancher/k3s/k3s.yaml
+    dest: /tmp/k3s.yaml
+    flat: true

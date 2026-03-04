@@ -12,6 +12,7 @@ on:
 env:
   AWS_REGION: us-west-1
   CLUSTER_DIR: terraform/aws/cluster
+  S3_BUCKET: lkb-main-s3-bucket
 
 jobs:
   # plan:
@@ -75,3 +76,5 @@ jobs:
           ansible-playbook \
             -i ansible/bootstrap_cluster/inventory/aws_ec2.yml \
             ansible/bootstrap_cluster/site.yml
+      - name: Upload kubeconfig to S3
+        run: aws s3 cp /tmp/k3s.yaml s3://$S3_BUCKET/kubeconfig/k3s.yaml
