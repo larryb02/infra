@@ -73,7 +73,7 @@ jobs:
           sudo dpkg -i session-manager-plugin.deb
       - name: Bootstrap k3s cluster
         run: |
-          ansible-playbook \
+          ansible-playbook -vvv \
             -i ansible/bootstrap_cluster/inventory/aws_ec2.yml \
             ansible/bootstrap_cluster/site.yml
       - name: Upload kubeconfig to S3
