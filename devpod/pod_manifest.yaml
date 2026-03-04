@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: devpod
+spec:
+  containers:
+    - name: devpod
+      envFrom:
+        - configMapRef:
+            name: buildserver-config
+        - secretRef:
+            name: buildserver-secrets
