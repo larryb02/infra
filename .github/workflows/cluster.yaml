@@ -49,7 +49,7 @@ jobs:
       - run: |
           terraform -chdir=$CLUSTER_DIR init
           terraform -chdir=$CLUSTER_DIR validate
-          terraform -chdir=$CLUSTER_DIR apply -auto-approve -var="agent_count=0"
+          terraform -chdir=$CLUSTER_DIR apply -auto-approve -var="agent_count=0" -var="server_instance_type=t2.medium"
 
   bootstrap_cluster:
     runs-on: ubuntu-latest
