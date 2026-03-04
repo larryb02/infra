@@ -12,7 +12,7 @@
     mode: '0644'
 
 - name: Install k3s server
-  ansible.builtin.command: curl -sfL https://get.k3s.io | sh -
+  ansible.builtin.shell: curl -sfL https://get.k3s.io | sh -
   args:
     creates: /usr/local/bin/k3s
 
