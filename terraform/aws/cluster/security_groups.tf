@@ -21,13 +21,13 @@ resource "aws_security_group" "k3s-agent" {
 }
 
 # k3s-server rules
-resource "aws_vpc_security_group_ingress_rule" "k3s_server_ssh" {
-  security_group_id = aws_security_group.k3s-server.id
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 22
-  to_port           = 22
-  ip_protocol       = "tcp"
-}
+# resource "aws_vpc_security_group_ingress_rule" "k3s_server_ssh" {
+#   security_group_id = aws_security_group.k3s-server.id
+#   cidr_ipv4         = "0.0.0.0/0"
+#   from_port         = 22
+#   to_port           = 22
+#   ip_protocol       = "tcp"
+# }
 
 resource "aws_vpc_security_group_ingress_rule" "k3s_server_http" {
   security_group_id = aws_security_group.k3s-server.id
@@ -90,13 +90,13 @@ resource "aws_vpc_security_group_egress_rule" "k3s_server_allow_all_ipv6" {
 }
 
 #k3s-agent rules
-resource "aws_vpc_security_group_ingress_rule" "k3s_agent_ssh" {
-  security_group_id = aws_security_group.k3s-agent.id
-  cidr_ipv4         = "0.0.0.0/0"
-  from_port         = 22
-  to_port           = 22
-  ip_protocol       = "tcp"
-}
+# resource "aws_vpc_security_group_ingress_rule" "k3s_agent_ssh" {
+#   security_group_id = aws_security_group.k3s-agent.id
+#   cidr_ipv4         = "0.0.0.0/0"
+#   from_port         = 22
+#   to_port           = 22
+#   ip_protocol       = "tcp"
+# }
 
 resource "aws_vpc_security_group_egress_rule" "k3s_agent_allow_all_ipv4" {
   security_group_id = aws_security_group.k3s-agent.id
