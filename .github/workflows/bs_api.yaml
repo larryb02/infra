@@ -1,0 +1,32 @@
+name: Deploy bs_api
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "terraform/aws/bs_api/**"
+      - "terraform/aws/security_groups/**"
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-west-1
+  BS_API_DIR: terraform/aws/bs_api
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v6
+        with:
+          role-to-assume: ${{ secrets.AWS_GITHUB_RUNNER_ROLE }}
+          aws-region: ${{ env.AWS_REGION }}
+      - uses: hashicorp/setup-terraform@v3
+      - run: |
+          terraform -chdir=$BS_API_DIR init
+          terraform -chdir=$BS_API_DIR validate
+          terraform -chdir=$BS_API_DIR apply -auto-approve
