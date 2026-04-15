@@ -16,3 +16,16 @@
   ansible.builtin.file:
     path: "{{ nerdctl_zip_dest }}"
     state: absent
+
+- name: Create nerdctl config directory
+  ansible.builtin.file:
+    path: /etc/nerdctl
+    state: directory
+    mode: '0755'
+
+- name: Configure CNI_PATH
+  ansible.builtin.copy:
+    dest: /etc/nerdctl/nerdctl.toml
+    content: |
+      cni_path = "{{ nerdctl_dest }}/libexec/cni"
+    mode: '0644'
