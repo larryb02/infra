@@ -1,7 +1,7 @@
 ---
 - name: Bootstrap Buildserver Instance
   hosts: buildserver
-  gather_facts: false
+  gather_facts: true
   become: true
 
   vars:
