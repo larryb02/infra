@@ -17,7 +17,7 @@
         state: latest
 
     - name: Configure containerd
-      ansible.builtin.import_role:
+      ansible.builtin.include_role:
         name: ../../roles/ansible-role-containerd
 
     - name: Install nerdctl  
