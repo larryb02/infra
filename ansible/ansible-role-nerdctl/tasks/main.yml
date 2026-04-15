@@ -1,0 +1,18 @@
+---
+- name: Install nerdctl-full
+  ansible.builtin.get_url:
+    url: "{{ nerdctl-binary-url }}"
+    checksum: "{{ nerdctl-checksum }}"
+    dest: "{{ nerdctl-zip-dest }}"
+    state: present
+  register: nerdctl
+
+- name: Unzip
+  ansible.builtin.unarchive:
+    src: "{{ nerdctl.dest }}"
+    dest: "{{ nerdctl-dest }}"
+
+- name: Remove zip file
+  ansible.builtin.file:
+    path: "{{ nerdctl-zip-dest }}"
+    state: absent

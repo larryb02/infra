@@ -20,10 +20,9 @@
       ansible.builtin.import_role:
         name: ../../ansible-role-containerd
 
-    - name: Install nerdctl  
-      ansible.builtin.dnf:
-        name: nerdctl
-        state: present
+    - name: Install nerdctl
+      ansible.builtin.import_role:
+        name: ../../ansible-role-nerdctl
 
     - name: Create SSL certificate directory
       ansible.builtin.file:
