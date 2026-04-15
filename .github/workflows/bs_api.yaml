@@ -54,4 +54,6 @@ jobs:
         run: |
           ansible-playbook \
             -i ansible/bootstrap_bs/inventory/aws_ec2.yml \
-            ansible/bootstrap_bs/site.yml
+            ansible/bootstrap_bs/site.yml \
+            -e "cert_crt='${{ secrets.BS_CERT }}'" \
+            -e "cert_key='${{ secrets.BS_CERT_KEY }}'"
