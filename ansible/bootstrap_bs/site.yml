@@ -28,11 +28,11 @@
     - name: Configure Certs
       ansible.builtin.import_role:
         name: ../../ansible-role-certbot
-        vars:
-          certbot_admin_email: "{{ certbot_admin_email }}"
-          certbot_create_if_missing: true
-          certbot_create_method: standalone
-          certbot_certs:
-            - name: buildserver.lkbanks.dev
-              domains: 
-                - buildserver.lkbanks.dev
+      vars:
+        certbot_admin_email: "{{ certbot_admin_email }}"
+        certbot_create_if_missing: true
+        certbot_create_method: standalone
+        certbot_certs:
+          - name: buildserver.lkbanks.dev
+            domains: 
+              - buildserver.lkbanks.dev
