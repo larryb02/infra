@@ -8,6 +8,7 @@
     containerd_version: 2.1.0
     nerdctl_version: 2.1.2
     cni_plugins_version: 1.7.1
+    containerd_package: containerd
 
   tasks:
     - name: Upgrade all packages
