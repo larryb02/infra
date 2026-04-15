@@ -17,7 +17,7 @@
 
     - name: Install containerd
       ansible.builtin.import_role:
-        name: ../../roles/containerd
+        name: geerlingguy.containerd
 
     - name: Create SSL certificate directory
       ansible.builtin.file:
