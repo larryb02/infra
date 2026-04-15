@@ -1,6 +1,6 @@
 ---
-roles:
-  - name: geerlingguy.certbot
+# roles:
+#   - name: geerlingguy.certbot
 
 collections:
   - name: amazon.aws
