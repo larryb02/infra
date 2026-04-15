@@ -1,0 +1,38 @@
+---
+- name: Bootstrap Buildserver Instance
+  hosts: buildserver
+  gather_facts: false
+  become: true
+
+  vars:
+    containerd_version: 2.1.0
+    nerdctl_version: 2.1.2
+    cni_plugins_version: 1.7.1
+
+  tasks:
+    - name: Upgrade all packages
+      ansible.builtin.dnf:
+        name: "*"
+        state: latest
+
+    - name: Install containerd
+      ansible.builtin.import_role:
+        name: ../../roles/containerd
+
+    - name: Create SSL certificate directory
+      ansible.builtin.file:
+        path: /etc/certs/bs
+        state: directory
+        mode: '0755'
+
+    - name: Copy TLS certificate
+      ansible.builtin.copy:
+        src: server.crt
+        dest: /etc/certs/bs/server.crt
+        mode: '0644'
+
+    - name: Copy TLS private key
+      ansible.builtin.copy:
+        src: server.key
+        dest: /etc/certs/bs/server.key
+        mode: '0600'
