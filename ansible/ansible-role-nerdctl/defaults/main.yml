@@ -1,4 +1,5 @@
 ---
-nerdctl-binary-url: https://github.com/containerd/nerdctl/releases/download/v2.2.2/nerdctl-full-2.2.2-linux-amd64.tar.gz
-nerdctl-zip-dest: /tmp/nerdctl-full.tar.gz
-nerdctl-checksum: sha256:8a477f35533c6cc1120c19558d8142967c74f25a4b952b481f48104e030de914
+nerdctl_binary_url: https://github.com/containerd/nerdctl/releases/download/v2.2.2/nerdctl-full-2.2.2-linux-amd64.tar.gz
+nerdctl_zip_dest: /tmp/nerdctl-full.tar.gz
+nerdctl_checksum: sha256:8a477f35533c6cc1120c19558d8142967c74f25a4b952b481f48104e030de914
+nerdctl_dest: /usr/local
