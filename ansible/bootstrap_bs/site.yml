@@ -15,9 +15,14 @@
         name: "*"
         state: latest
 
-    - name: Install containerd
+    - name: Configure containerd
       ansible.builtin.import_role:
-        name: geerlingguy.containerd
+        name: ../../roles/ansible-role-containerd
+
+    - name: Install nerdctl  
+      ansible.builtin.dnf:
+        name: nerdctl
+        state: present
 
     - name: Create SSL certificate directory
       ansible.builtin.file:
