@@ -9,6 +9,13 @@
     nerdctl_version: 2.1.2
     cni_plugins_version: 1.7.1
     containerd_package: containerd
+    certbot_admin_email: "{{ certbot_admin_email }}"
+    certbot_create_if_missing: true
+    certbot_create_method: standalone
+    certbot_certs:
+      - name: buildserver.lkbanks.dev
+        domains: 
+          - buildserver.lkbanks.dev
 
   tasks:
     - name: Upgrade all packages
@@ -24,20 +31,6 @@
       ansible.builtin.import_role:
         name: ../../ansible-role-nerdctl
 
-    - name: Create SSL certificate directory
-      ansible.builtin.file:
-        path: /etc/certs/bs
-        state: directory
-        mode: '0755'
-
-    - name: Copy TLS certificate
-      ansible.builtin.copy:
-        content: "{{ cert_crt }}"
-        dest: /etc/certs/bs/server.crt
-        mode: '0644'
-
-    - name: Copy TLS private key
-      ansible.builtin.copy:
-        content: "{{ cert_key }}"
-        dest: /etc/certs/bs/server.key
-        mode: '0600'
+    - name: Configure Certs
+      ansible.builtin.import_role:
+        name: geerlingguy.certbot
