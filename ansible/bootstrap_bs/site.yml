@@ -32,6 +32,7 @@
         certbot_admin_email: "{{ certbot_admin_email }}"
         certbot_create_if_missing: true
         certbot_create_method: standalone
+        certbot_create_standalone_stop_services: []
         certbot_certs:
           - name: buildserver.lkbanks.dev
             domains: 
