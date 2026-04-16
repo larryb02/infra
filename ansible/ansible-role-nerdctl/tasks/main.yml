@@ -1,9 +1,4 @@
 ---
-- name: Install iptables
-  ansible.builtin.dnf:
-    name: iptables
-    state: present
-
 - name: Install nerdctl-full
   ansible.builtin.get_url:
     url: "{{ nerdctl_binary_url }}"

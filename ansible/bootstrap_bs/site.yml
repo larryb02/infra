@@ -17,6 +17,13 @@
         name: "*"
         state: latest
 
+    - name: Install system prerequisites
+      ansible.builtin.dnf:
+        name:
+          - iptables
+          - cronie
+        state: present
+
     - name: Configure containerd
       ansible.builtin.import_role:
         name: ../../ansible-role-containerd
