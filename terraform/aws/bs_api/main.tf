@@ -57,3 +57,12 @@ resource "aws_instance" "buildserver" {
     Role = "buildserver-api"
   }
 }
+
+resource "aws_eip" "buildserver" {
+  instance = aws_instance.buildserver.id
+  domain   = "vpc"
+
+  tags = {
+    Name = "buildserver"
+  }
+}
