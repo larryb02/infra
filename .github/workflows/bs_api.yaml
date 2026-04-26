@@ -17,6 +17,9 @@ on:
 
 jobs:
   apply:
+    permissions: 
+      id-token: write
+      contents: read
     uses: ./.github/workflows/_tf-apply.yaml
     with:
       project: bs_api
