@@ -1,0 +1,61 @@
+name: Terraform Apply (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      project:
+        description: Project name (e.g. bs_api)
+        required: true
+        type: string
+      env:
+        description: Target environment (e.g. prod, dev)
+        required: true
+        type: string
+      tf_dir:
+        description: Path to the Terraform root directory
+        required: true
+        type: string
+      aws_region:
+        required: false
+        type: string
+        default: us-west-1
+      state_bucket:
+        required: false
+        type: string
+        default: lkb-main-s3-bucket
+      lock_table:
+        required: false
+        type: string
+        default: infra-tf-locks
+    secrets:
+      aws_role:
+        required: true
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.aws_role }}
+          aws-region: ${{ inputs.aws_region }}
+      - uses: hashicorp/setup-terraform@v3
+      - name: Terraform init
+        run: |
+          terraform -chdir=${{ inputs.tf_dir }} init \
+            -backend-config="bucket=${{ inputs.state_bucket }}" \
+            -backend-config="key=${{ inputs.project }}/${{ inputs.env }}/terraform.tfstate" \
+            -backend-config="region=${{ inputs.aws_region }}" \
+            -backend-config="encrypt=true" \
+            -backend-config="dynamodb_table=${{ inputs.lock_table }}"
+      - name: Terraform validate
+        run: terraform -chdir=${{ inputs.tf_dir }} validate
+      - name: Terraform apply
+        run: |
+          terraform -chdir=${{ inputs.tf_dir }} apply \
+            -auto-approve \
+            -var-file="envs/${{ inputs.env }}.tfvars"

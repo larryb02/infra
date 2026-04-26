@@ -1,0 +1,33 @@
+name: Tag Release (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      project:
+        required: true
+        type: string
+      env:
+        required: true
+        type: string
+      version_file:
+        description: Path to the VERSION file (e.g. projects/bs_api/VERSION)
+        required: true
+        type: string
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+      - name: Read version
+        id: version
+        run: |
+          VERSION=$(cat "${{ inputs.version_file }}" | tr -d '[:space:]')
+          echo "tag=${{ inputs.project }}/${{ inputs.env }}/v${VERSION}" >> "$GITHUB_OUTPUT"
+      - uses: mathieudutour/github-tag-action@v6.2
+        with:
+          github_token: ${{ github.token }}
+          custom_tag: ${{ steps.version.outputs.tag }}
+          tag_prefix: ""

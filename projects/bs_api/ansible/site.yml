@@ -1,0 +1,45 @@
+---
+- name: Bootstrap Buildserver Instance
+  hosts: buildserver
+  gather_facts: true
+  become: true
+
+  vars:
+    containerd_version: 2.1.0
+    nerdctl_version: 2.1.2
+    cni_plugins_version: 1.7.1
+    containerd_package: containerd
+
+  tasks:
+    - name: Upgrade all packages
+      ansible.builtin.dnf:
+        name: "*"
+        state: latest
+
+    - name: Install system prerequisites
+      ansible.builtin.dnf:
+        name:
+          - iptables
+          - cronie
+        state: present
+
+    - name: Configure containerd
+      ansible.builtin.import_role:
+        name: ansible-role-containerd
+
+    - name: Install nerdctl
+      ansible.builtin.import_role:
+        name: ansible-role-nerdctl
+
+    - name: Configure Certs
+      ansible.builtin.import_role:
+        name: ansible-role-certbot
+      vars:
+        certbot_admin_email: "{{ certbot_admin_email }}"
+        certbot_create_if_missing: true
+        certbot_create_method: standalone
+        certbot_create_standalone_stop_services: []
+        certbot_certs:
+          - name: buildserver.lkbanks.dev
+            domains:
+              - buildserver.lkbanks.dev

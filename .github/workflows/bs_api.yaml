@@ -5,56 +5,41 @@ on:
     branches:
       - main
     paths:
-      - "terraform/aws/bs_api/**"
-      - "terraform/aws/security_groups/**"
+      - "projects/bs_api/**"
   workflow_dispatch:
-
-env:
-  AWS_REGION: us-west-1
-  BS_API_DIR: terraform/aws/bs_api
+    inputs:
+      env:
+        description: Target environment
+        required: true
+        type: choice
+        options: [prod, dev]
+        default: prod
 
 jobs:
   apply:
-    runs-on: ubuntu-latest
-    permissions:
-      id-token: write
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-      - uses: aws-actions/configure-aws-credentials@v6
-        with:
-          role-to-assume: ${{ secrets.AWS_GITHUB_RUNNER_ROLE }}
-          aws-region: ${{ env.AWS_REGION }}
-      - uses: hashicorp/setup-terraform@v3
-      - run: |
-          terraform -chdir=$BS_API_DIR init
-          terraform -chdir=$BS_API_DIR validate
-          terraform -chdir=$BS_API_DIR apply -auto-approve
+    uses: ./.github/workflows/_tf-apply.yaml
+    with:
+      project: bs_api
+      env: ${{ inputs.env || 'prod' }}
+      tf_dir: projects/bs_api/terraform
+    secrets:
+      aws_role: ${{ secrets.AWS_GITHUB_RUNNER_ROLE }}
 
   bootstrap:
-    runs-on: ubuntu-latest
-    needs: [apply]
-    permissions:
-      id-token: write
-      contents: read
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          submodules: recursive
-      - uses: aws-actions/configure-aws-credentials@v6
-        with:
-          role-to-assume: ${{ secrets.AWS_GITHUB_RUNNER_ROLE }}
-          aws-region: ${{ env.AWS_REGION }}
-      - name: Install Ansible and SSM plugin
-        run: |
-          sudo apt install -y python3-pip
-          pip3 install ansible boto3 botocore
-          ansible-galaxy install -r ansible/bootstrap_bs/requirements.yml
-          curl -fsSL "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" -o "session-manager-plugin.deb"
-          sudo dpkg -i session-manager-plugin.deb
-      - name: Bootstrap buildserver
-        run: |
-          ansible-playbook \
-            -i ansible/bootstrap_bs/inventory/aws_ec2.yml \
-            ansible/bootstrap_bs/site.yml \
-            -e "certbot_admin_email='${{ secrets.CERTBOT_EMAIL }}'"
+    needs: apply
+    uses: ./.github/workflows/_ansible-bootstrap.yaml
+    with:
+      project: bs_api
+      playbook_dir: projects/bs_api/ansible
+      env: ${{ inputs.env || 'prod' }}
+      extra_vars: certbot_admin_email=${{ secrets.CERTBOT_EMAIL }}
+    secrets:
+      aws_role: ${{ secrets.AWS_GITHUB_RUNNER_ROLE }}
+
+  tag:
+    needs: bootstrap
+    uses: ./.github/workflows/_tag-release.yaml
+    with:
+      project: bs_api
+      env: ${{ inputs.env || 'prod' }}
+      version_file: projects/bs_api/VERSION.txt

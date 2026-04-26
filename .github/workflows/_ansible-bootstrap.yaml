@@ -1,0 +1,63 @@
+name: Ansible Bootstrap (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      project:
+        description: Project name (e.g. bs_api)
+        required: true
+        type: string
+      playbook_dir:
+        description: Path to the Ansible playbook directory
+        required: true
+        type: string
+      env:
+        description: Target environment (e.g. prod, dev)
+        required: true
+        type: string
+      aws_region:
+        required: false
+        type: string
+        default: us-west-1
+      extra_vars:
+        description: Extra variables passed to ansible-playbook --extra-vars (JSON or key=value string)
+        required: false
+        type: string
+        default: "{}"
+    secrets:
+      aws_role:
+        required: true
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.aws_role }}
+          aws-region: ${{ inputs.aws_region }}
+      - name: Install pip dependencies
+        run: pip3 install -r requirements.txt
+      - name: Install Ansible collections and roles
+        run: |
+          ansible-galaxy role install -r ${{ inputs.playbook_dir }}/requirements.yml 2>/dev/null || true
+          ansible-galaxy collection install -r ${{ inputs.playbook_dir }}/requirements.yml
+      - name: Install AWS SSM plugin
+        run: |
+          curl -fsSL "https://s3.amazonaws.com/session-manager-downloads/plugin/latest/ubuntu_64bit/session-manager-plugin.deb" \
+            -o session-manager-plugin.deb
+          sudo dpkg -i session-manager-plugin.deb
+      - name: Run playbook
+        run: |
+          ansible-playbook \
+            -i ${{ inputs.playbook_dir }}/inventory/aws_ec2.yml \
+            ${{ inputs.playbook_dir }}/site.yml \
+            --extra-vars '${{ inputs.extra_vars }}'
+        env:
+          ENV: ${{ inputs.env }}

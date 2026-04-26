@@ -1,0 +1,34 @@
+name: Deploy bastion
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "projects/bastion/**"
+  workflow_dispatch:
+    inputs:
+      env:
+        description: Target environment
+        required: true
+        type: choice
+        options: [prod]
+        default: prod
+
+jobs:
+  apply:
+    uses: ./.github/workflows/_tf-apply.yaml
+    with:
+      project: bastion
+      env: ${{ inputs.env || 'prod' }}
+      tf_dir: projects/bastion/terraform
+    secrets:
+      aws_role: ${{ secrets.AWS_GITHUB_RUNNER_ROLE }}
+
+  tag:
+    needs: apply
+    uses: ./.github/workflows/_tag-release.yaml
+    with:
+      project: bastion
+      env: ${{ inputs.env || 'prod' }}
+      version_file: projects/bastion/VERSION.txt
