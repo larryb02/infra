@@ -20,7 +20,7 @@ module "buildserver" {
   source                 = "../../../modules/ec2-instance"
   instance_type          = var.instance_type
   vpc_security_group_ids = [data.aws_security_group.http_server.id]
-  name                   = "${var.env}-buildserver"
+  name                   = "buildserver-${var.env}"
   role                   = "buildserver-api"
   env                    = var.env
 }
