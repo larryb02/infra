@@ -23,10 +23,6 @@ on:
         required: false
         type: string
         default: lkb-main-s3-bucket
-      lock_table:
-        required: false
-        type: string
-        default: infra-tf-locks
     secrets:
       aws_role:
         required: true
@@ -50,8 +46,7 @@ jobs:
             -backend-config="bucket=${{ inputs.state_bucket }}" \
             -backend-config="key=${{ inputs.project }}/${{ inputs.env }}/terraform.tfstate" \
             -backend-config="region=${{ inputs.aws_region }}" \
-            -backend-config="encrypt=true" \
-            -backend-config="dynamodb_table=${{ inputs.lock_table }}"
+            -backend-config="encrypt=true"
       - name: Terraform validate
         run: terraform -chdir=${{ inputs.tf_dir }} validate
       - name: Terraform plan
