@@ -32,6 +32,7 @@ jobs:
     needs: apply
     permissions:
       id-token: write
+      contents: read
     uses: ./.github/workflows/_ansible-bootstrap.yaml
     with:
       project: bs_api
