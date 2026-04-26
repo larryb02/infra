@@ -30,6 +30,8 @@ jobs:
 
   bootstrap:
     needs: apply
+    permissions:
+      id-token: write
     uses: ./.github/workflows/_ansible-bootstrap.yaml
     with:
       project: bs_api
@@ -41,6 +43,8 @@ jobs:
 
   tag:
     needs: bootstrap
+    permissions:
+      contents: write
     uses: ./.github/workflows/_tag-release.yaml
     with:
       project: bs_api
