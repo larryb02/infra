@@ -12,14 +12,14 @@ provider "aws" {
   region = var.region
 }
 
-module "security_group" {
-  source = "../../../modules/security-group-http"
+data "aws_security_group" "http_server" {
+  name = "http-server"
 }
 
 module "buildserver" {
   source                 = "../../../modules/ec2-instance"
   instance_type          = var.instance_type
-  vpc_security_group_ids = [module.security_group.http_server_sg_id]
+  vpc_security_group_ids = [data.aws_security_group.http_server.id]
   name                   = "${var.env}-buildserver"
   role                   = "buildserver-api"
   env                    = var.env
