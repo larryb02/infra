@@ -19,13 +19,10 @@ on:
         required: false
         type: string
         default: us-west-1
-      extra_vars:
-        description: Extra variables passed to ansible-playbook --extra-vars (JSON or key=value string)
-        required: false
-        type: string
-        default: "{}"
     secrets:
       aws_role:
+        required: true
+      certbot_email:
         required: true
 
 jobs:
@@ -58,6 +55,6 @@ jobs:
           ansible-playbook \
             -i ${{ inputs.playbook_dir }}/inventory/aws_ec2.yml \
             ${{ inputs.playbook_dir }}/site.yml \
-            --extra-vars '${{ inputs.extra_vars }}'
+            --extra-vars certbot_email='${{ secrets.certbot_email }}'
         env:
           ENV: ${{ inputs.env }}

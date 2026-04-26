@@ -32,9 +32,9 @@ jobs:
       project: bs_api
       playbook_dir: projects/bs_api/ansible
       env: ${{ inputs.env || 'prod' }}
-      extra_vars: certbot_admin_email=${{ secrets.CERTBOT_EMAIL }}
     secrets:
       aws_role: ${{ secrets.AWS_GITHUB_RUNNER_ROLE }}
+      certbot_email: ${{ secrets.CERTBOT_EMAIL }}
 
   tag:
     needs: bootstrap
