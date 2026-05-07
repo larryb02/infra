@@ -55,6 +55,5 @@ jobs:
           ansible-playbook \
             -i ${{ inputs.playbook_dir }}/inventory/aws_ec2.yml \
             ${{ inputs.playbook_dir }}/site.yml \
-            --extra-vars certbot_email='${{ secrets.certbot_email }}'
-        env:
-          ENV: ${{ inputs.env }}
+            --extra-vars "env=${{ inputs.env }}" \
+            --extra-vars "certbot_email='${{ secrets.certbot_email }}'"

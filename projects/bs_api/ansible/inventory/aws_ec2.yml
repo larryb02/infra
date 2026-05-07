@@ -5,10 +5,12 @@ regions:
 filters:
   tag:Name:
     - buildserver
-  tag:Env:
-    - "{{ lookup('env', 'ENV') | default('prod') }}"
+    - buildserver-dev
   instance-state-name: running
 hostnames:
   - tag:Name
 compose:
   ansible_host: instance_id
+groups:
+  prod: tags.Name == 'buildserver'
+  dev: tags.Name == 'buildserver-dev'

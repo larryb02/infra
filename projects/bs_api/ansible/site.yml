@@ -1,6 +1,6 @@
 ---
 - name: Bootstrap Buildserver Instance
-  hosts: buildserver
+  hosts: "{{ env }}"
   gather_facts: true
   become: true
 
