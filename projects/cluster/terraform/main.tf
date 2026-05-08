@@ -30,7 +30,7 @@ module "sg_k3s_server" {
   name   = "k3s-server-${var.env}"
   vpc_id = data.aws_vpc.default.id
 
-  ingress_cidr_blocks = ["0.0.0.0/0"]
+  ingress_cidr_blocks = [data.aws_vpc.default.cidr_block]
 
   tags = {
     Env = var.env
