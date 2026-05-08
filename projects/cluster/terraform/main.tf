@@ -12,8 +12,15 @@ provider "aws" {
   region = var.region
 }
 
-data "aws_security_group" "k3s_server" {
-  name = "k3s-server"
+data "aws_vpc" "default" {
+  default = true
+}
+
+data "aws_subnets" "default" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default.id]
+  }
 }
 
 module "k3s_server" {
@@ -22,7 +29,8 @@ module "k3s_server" {
 
   name                   = "k3s-server-${var.env}"
   instance_type          = var.instance_type
-  vpc_security_group_ids = [data.aws_security_group.k3s_server.id]
+  subnet_id              = data.aws_subnets.default.ids[0]
+  vpc_security_group_ids = [module.sg_k3s_server.security_group_id]
 
   tags = {
     Role = "k3s-server"
