@@ -10,20 +10,8 @@ variable "env" {
   default     = "prod"
 }
 
-variable "server_instance_type" {
-  description = "EC2 instance type for server nodes"
+variable "instance_type" {
+  description = "EC2 instance type for the K3S server"
   type        = string
-  default     = "t2.micro"
-}
-
-variable "agent_instance_type" {
-  description = "EC2 instance type for agent nodes"
-  type        = string
-  default     = "t2.micro"
-}
-
-variable "agent_count" {
-  description = "Number of k3s agent nodes"
-  type        = number
-  default     = 0
+  default     = "t3.medium"
 }

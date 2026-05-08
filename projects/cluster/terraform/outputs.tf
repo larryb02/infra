@@ -1,9 +1,7 @@
-output "server_ip" {
-  description = "Public IP of the k3s server node"
-  value       = module.server.public_ip
+output "server_id" {
+  value = module.k3s_server.id
 }
 
-output "agent_ips" {
-  description = "Public IPs of the k3s agent nodes"
-  value       = [for a in module.agent : a.public_ip]
+output "server_public_ip" {
+  value = module.k3s_server.public_ip
 }

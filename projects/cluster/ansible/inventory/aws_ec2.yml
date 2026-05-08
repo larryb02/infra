@@ -4,14 +4,12 @@ regions:
   - us-west-1
 filters:
   tag:Name:
-    - k3s-server
-    - k3s-agent-*
+    - k3s-server-prod
+    - k3s-server-dev
   instance-state-name: running
-keyed_groups:
-  - key: tags.Role
-    prefix: k3s
-    separator: _
 hostnames:
   - tag:Name
 compose:
   ansible_host: instance_id
+groups:
+  server: "'k3s-server' in tags.Name"

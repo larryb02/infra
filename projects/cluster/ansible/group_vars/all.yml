@@ -5,3 +5,5 @@ ansible_aws_ssm_bucket_name: lkb-main-s3-bucket
 ansible_aws_ssm_region: us-west-1
 
 k3s_version: v1.32.1+k3s1
+# SSM uses instance_id as ansible_host, so derive the API endpoint from EC2 facts instead
+api_endpoint: "{{ hostvars[groups['server'][0]]['private_ip_address'] }}"
