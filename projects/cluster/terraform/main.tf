@@ -23,6 +23,20 @@ data "aws_subnets" "default" {
   }
 }
 
+module "sg_k3s_server" {
+  source  = "terraform-aws-modules/security-group/aws//modules/kubernetes-api"
+  version = "~> 5.3"
+
+  name   = "k3s-server-${var.env}"
+  vpc_id = data.aws_vpc.default.id
+
+  ingress_cidr_blocks = ["0.0.0.0/0"]
+
+  tags = {
+    Env = var.env
+  }
+}
+
 module "k3s_server" {
   source  = "terraform-aws-modules/ec2-instance/aws"
   version = "~> 6.4"
