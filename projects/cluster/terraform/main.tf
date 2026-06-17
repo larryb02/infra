@@ -16,11 +16,33 @@ data "aws_vpc" "default" {
   default = true
 }
 
-# 1. Fetch all subnets in the region that are marked as the default for their AZ
+# AZs in this region that actually offer the requested instance type.
+data "aws_ec2_instance_type_offerings" "supported" {
+  filter {
+    name   = "instance-type"
+    values = [var.instance_type]
+  }
+
+  location_type = "availability-zone"
+}
+
+# Default subnets in the default VPC, restricted to AZs that support the
+# instance type, so we never land in an unsupported AZ (e.g. t3.medium in
+# us-east-1e).
 data "aws_subnets" "default" {
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpc.default.id]
+  }
+
   filter {
     name   = "default-for-az"
     values = ["true"]
+  }
+
+  filter {
+    name   = "availability-zone"
+    values = data.aws_ec2_instance_type_offerings.supported.locations
   }
 }
 
@@ -147,7 +169,7 @@ module "k8s_control_plane" {
   name                   = "control-plane-${var.env}"
   instance_type          = var.instance_type
   vpc_security_group_ids = [module.sg_k8s_control_plane.security_group_id]
-  subnet_id = data.aws_subnets.default.ids[0]
+  subnet_id              = data.aws_subnets.default.ids[0]
 
   tags = {
     Role = "control-plane"
@@ -164,7 +186,7 @@ module "k8s_worker" {
   name                   = "worker-${each.key}-${var.env}"
   instance_type          = var.instance_type
   vpc_security_group_ids = [module.sg_k8s_worker.security_group_id]
-  subnet_id = data.aws_subnets.default.ids[0]
+  subnet_id              = data.aws_subnets.default.ids[0]
 
   tags = {
     Role = "worker"
