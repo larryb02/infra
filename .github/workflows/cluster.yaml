@@ -1,4 +1,4 @@
-name: Deploy K3S Cluster
+name: Deploy k8s Cluster
 
 on:
   push:

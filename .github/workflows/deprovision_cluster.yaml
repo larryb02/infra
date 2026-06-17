@@ -1,4 +1,4 @@
-name: Deprovision K3S Cluster
+name: Deprovision k8s Cluster
 
 on:
   workflow_dispatch:
