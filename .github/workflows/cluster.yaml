@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - main
+      - development
     paths:
       - "projects/cluster/terraform/**"
   workflow_dispatch:
@@ -22,7 +23,7 @@ jobs:
       id-token: write
       contents: write
     env:
-      ENV: ${{ inputs.env || 'prod' }}
+      ENV: ${{ inputs.env || (github.ref == 'refs/heads/main' && 'prod' || 'dev') }}
       TF_DIR: projects/cluster/terraform
 
     steps:
@@ -45,7 +46,7 @@ jobs:
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_GITHUB_RUNNER_ROLE }}
-          aws-region: us-west-1
+          aws-region: ${{ secrets.AWS_REGION }}
 
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3

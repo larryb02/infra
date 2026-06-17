@@ -1,0 +1,48 @@
+name: Deprovision K3S Cluster
+
+on:
+  workflow_dispatch:
+    inputs:
+      env:
+        description: Target environment to destroy
+        required: true
+        type: choice
+        options: [prod, dev]
+        default: dev
+
+jobs:
+  destroy:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    env:
+      ENV: ${{ inputs.env }}
+      TF_DIR: projects/cluster/terraform
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_GITHUB_RUNNER_ROLE }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+
+      # Backend key is scoped to the chosen env, so destroy only touches that
+      # environment's state (mirrors the deploy workflow's isolation).
+      - name: Terraform init
+        working-directory: ${{ env.TF_DIR }}
+        run: |
+          terraform init \
+            -backend-config="bucket=${{ secrets.AWS_BUCKET }}" \
+            -backend-config="key=cluster/${{ env.ENV }}/terraform.tfstate" \
+            -backend-config="region=${{ secrets.AWS_REGION }}" \
+            -backend-config="encrypt=true"
+
+      - name: Terraform destroy
+        working-directory: ${{ env.TF_DIR }}
+        run: terraform destroy -auto-approve -var-file="envs/${{ env.ENV }}.tfvars"
