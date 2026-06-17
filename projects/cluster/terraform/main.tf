@@ -58,13 +58,13 @@ module "k8s_worker" {
 
   for_each = toset(["0", "1"])
 
-  name                   = "control-plane-${each.key}-${var.env}"
+  name                   = "worker-${each.key}-${var.env}"
   instance_type          = var.instance_type
   subnet_id              = data.aws_subnets.default.ids[0]
   vpc_security_group_ids = [module.sg_k8s_server.security_group_id]
 
   tags = {
-    Role = "control-plane"
+    Role = "worker"
     Env  = var.env
   }
 }
