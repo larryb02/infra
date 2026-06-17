@@ -16,6 +16,14 @@ data "aws_vpc" "default" {
   default = true
 }
 
+# 1. Fetch all subnets in the region that are marked as the default for their AZ
+data "aws_subnets" "default" {
+  filter {
+    name   = "default-for-az"
+    values = ["true"]
+  }
+}
+
 module "sg_k8s_control_plane" {
   source  = "terraform-aws-modules/security-group/aws"
   version = "~> 5.3"
@@ -139,6 +147,7 @@ module "k8s_control_plane" {
   name                   = "control-plane-${var.env}"
   instance_type          = var.instance_type
   vpc_security_group_ids = [module.sg_k8s_control_plane.security_group_id]
+  subnet_id = data.aws_subnets.default.ids[0]
 
   tags = {
     Role = "control-plane"
@@ -155,6 +164,7 @@ module "k8s_worker" {
   name                   = "worker-${each.key}-${var.env}"
   instance_type          = var.instance_type
   vpc_security_group_ids = [module.sg_k8s_worker.security_group_id]
+  subnet_id = data.aws_subnets.default.ids[0]
 
   tags = {
     Role = "worker"
