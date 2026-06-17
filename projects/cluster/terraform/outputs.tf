@@ -8,6 +8,7 @@ output "server_public_ip" {
 
 output "security_groups" {
   value = {
-    k3s_server = module.sg_k8s_server.security_group_id
+    control_plane = module.sg_k8s_control_plane.security_group_id
+    worker        = module.sg_k8s_worker.security_group_id
   }
 }
