@@ -16,13 +16,6 @@ data "aws_vpc" "default" {
   default = true
 }
 
-data "aws_subnets" "default" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.default.id]
-  }
-}
-
 module "sg_k8s_server" {
   source  = "terraform-aws-modules/security-group/aws//modules/kubernetes-api"
   version = "~> 5.3"
@@ -43,7 +36,6 @@ module "k8s_control_plane" {
 
   name                   = "control-plane-${var.env}"
   instance_type          = var.instance_type
-  subnet_id              = data.aws_subnets.default.ids[0]
   vpc_security_group_ids = [module.sg_k8s_server.security_group_id]
 
   tags = {
@@ -60,7 +52,6 @@ module "k8s_worker" {
 
   name                   = "worker-${each.key}-${var.env}"
   instance_type          = var.instance_type
-  subnet_id              = data.aws_subnets.default.ids[0]
   vpc_security_group_ids = [module.sg_k8s_server.security_group_id]
 
   tags = {
